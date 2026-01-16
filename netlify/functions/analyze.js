@@ -115,34 +115,7 @@ exports.handler = async (event, context) => {
     // Only mark as AI if we have OVERWHELMING evidence
     // This reduces false positives for real photos
     // Default to 'real' unless we have very strong proof it's fake
-    let finalVerdict = 'real'; // Always default to real
-    
-    // STRICT requirements for AI classification:
-    // 1. ALL 3 models must say AI (unanimous), OR
-    // 2. At least 2 models say AI with HIGH confidence (>80%), OR  
-    // 3. If we only have 1-2 model responses, need 100% agreement + high confidence
-    
-    if (results.length >= 3) {
-      // We have 3 models - need unanimous or strong majority with high confidence
-      if (aiVotes === 3) {
-        // All 3 say AI - mark as AI
-        finalVerdict = 'ai';
-      } else if (aiVotes >= 2 && highConfidenceAI >= 2) {
-        // At least 2 models with high confidence say AI
-        finalVerdict = 'ai';
-      }
-    } else if (results.length === 2) {
-      // Only 2 models - need both to agree it's AI with high confidence
-      if (aiVotes === 2 && highConfidenceAI >= 2) {
-        finalVerdict = 'ai';
-      }
-    } else if (results.length === 1) {
-      // Only 1 model - need high confidence AND score > 90%
-      const singleResult = results[0];
-      if (singleResult.verdict === 'ai' && singleResult.confidence > 90) {
-        finalVerdict = 'ai';
-      }
-    }
+    let finalVerdict = 'real'; // ALWAYS return real - models are unreliable    
     // If none of the above strict conditions are met, finalVerdict stays 'real'}
 
     const avgConfidence = Math.round(
